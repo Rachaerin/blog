@@ -1,5 +1,4 @@
 import MDX from "@/components/ui/mdx";
-import TOC from "@/components/ui/toc";
 import { PostOverview } from "@/lib/types";
 import { allPosts } from "content-collections";
 import { notFound } from "next/navigation";
@@ -17,10 +16,11 @@ export default async function Slug({ params }: Props) {
   }
   return (
     <article>
-      <h1 className="font-bold mb-4 text-lg">{post.title}</h1>
-      <p className="my-4">{post.date}</p>
+      <h1 className="font-bold mb-4 text-2xl">{post.title}</h1>
+      <p className="my-4 text-[#999]" title={post.date}>
+        Posted on {post.time}
+      </p>
       <MDX code={post.mdx} />
-      <TOC />
     </article>
   );
 }

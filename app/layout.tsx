@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import { cn } from "@/lib/utils";
 import "../styles/tailwindcss.css";
-import { baseUrl, metaConfig } from "@/lib/metadata";
-import Header from "@/components/layouts/header";
+import { _Metadata } from "@/lib/_metadata";
+
+export const metadata = _Metadata;
 
 export default function RootLayout({
   children,
@@ -10,21 +11,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning>
-        <main className="mx-auto max-w-3xl p-5" id="main-box">
-          <Header />
-          {children}
-        </main>
+      <body suppressHydrationWarning className={cn("max-w-3xl mx-auto p-3")}>
+        {children}
       </body>
     </html>
   );
 }
-
-export const metadata: Metadata = {
-  ...metaConfig,
-  metadataBase: new URL(baseUrl),
-  title: {
-    default: metaConfig.title,
-    template: `%s | ${metaConfig.title}`,
-  },
-};

@@ -1,9 +1,4 @@
-.latest-post-list {
-  margin-bottom: 14px;
-  list-style-type: disc;
-  padding-left: 1.2em;
-}
-
-.latest-post-list li::marker {
-  color: #f02e97;
+.all-articles > li::before {
+  content: "✦ ";
+  vertical-align: middle;
 }

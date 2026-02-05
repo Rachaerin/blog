@@ -11,9 +11,5 @@ export type PostOverview = Post & {
   slug: string;
   mdx: string;
   hashCode: string;
-};
-
-export type MindType = {
-  title: string;
-  minds: string[];
+  time: string;
 };

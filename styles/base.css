@@ -1,15 +1,17 @@
 @layer base {
   html,
   body {
-    @apply overflow-x-hidden text-sm;
+    font-size: 14px;
+    background-color: #f5f7f8;
+    line-height: 1.5;
+    font-family: "Source Sans Pro", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-    color: #292929;
-    /* background: #eee; */
   }
 
   ::selection {
@@ -31,10 +33,10 @@
     background-color: transparent;
   }
 
-  #main-box {
-    @apply min-h-screen;
-    background-image: url(/images/paper.png);
-    background-repeat: no-repeat;
-    background-position: top right;
+  h1::before,
+  h2::before,
+  h3::before {
+    content: "# ";
+    color: #ff0000;
   }
 }

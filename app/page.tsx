@@ -1,34 +1,42 @@
-import AnchorLink from "@/components/ui/anchor-link";
-import MindsList from "@/components/ui/minds-list";
-import PostList from "@/components/ui/post-list";
-
-function TitleElement({ text }: { text: string }) {
-  return <h1 className="mb-4 font-bold text-lg"># {text}</h1>;
-}
-
-function AllListElement({ text, url }: { text: string; url: string }) {
-  return (
-    <ul className="latest-post-list list-none!">
-      <li>
-        <AnchorLink href={url}>{text}...</AnchorLink>
-      </li>
-    </ul>
-  );
-}
+import CustomizeLink from "@/components/ui/customize-link";
+import { DEFAULT_WEB_TITLE } from "@/lib/_metadata";
+import { postsOrderedByDate } from "@/lib/posts";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <>
-      <section>
-        <TitleElement text="近期文章" />
-        <PostList count={10} />
-        <AllListElement text="所有文章" url="/posts" />
-      </section>
-      <section>
-        <TitleElement text="有话要说" />
-        <MindsList count={10} />
-        <AllListElement text="所有说要" url="/speak-mind" />
-      </section>
-    </>
+    <div>
+      <nav className="md:flex justify-between">
+        <div className="text-2xl font-bold py-2">{DEFAULT_WEB_TITLE}</div>
+        <ul className="flex items-center gap-4">
+          <li className="h-full">
+            <CustomizeLink href="/">HOME</CustomizeLink>
+          </li>
+          <li className="h-full">
+            <CustomizeLink href="/about">ABOUT</CustomizeLink>
+          </li>
+          <li className="h-full">
+            <CustomizeLink href="/gallery">GALLERY</CustomizeLink>
+          </li>
+          <li className="h-full">
+            <CustomizeLink href="/books">BOOKS</CustomizeLink>
+          </li>
+          <li className="h-full">
+            <CustomizeLink href="/friends">FRIENDS</CustomizeLink>
+          </li>
+        </ul>
+      </nav>
+      <h3 className="my-4 text-xl font-bold">All articles</h3>
+      <ul className="all-articles">
+        {postsOrderedByDate.map((post, ind) => (
+          <li key={ind}>
+            <Link href={post.url} className="hover:bg-[#e60076] hover:text-[#f9fafb]">
+              {post.title}
+            </Link>
+            <span className="text-[#999] ml-3">{post.time}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
