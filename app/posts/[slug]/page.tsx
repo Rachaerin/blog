@@ -19,6 +19,7 @@ export default async function Slug({ params }: Props) {
       <h1 className="font-bold mb-4 text-2xl">{post.title}</h1>
       <p className="my-4 text-[#999]" title={post.date}>
         Posted on {post.time}
+        <span className="tag-link ml-2">{post.category}</span>
       </p>
       <MDX code={post.mdx} />
     </article>

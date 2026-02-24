@@ -1,0 +1,41 @@
+.tag-link::before {
+  content: "✧ ";
+}
+
+#markdown-docs {
+  h1,
+  h2,
+  h3,
+  h4 {
+    position: relative;
+  }
+
+  h1::before,
+  h2::before,
+  h3::before,
+  h4::before {
+    content: "";
+    position: absolute;
+    width: 4px;
+    top: 0;
+    bottom: 0px;
+    left: -10px;
+    background-color: #f1092b;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+  h2 {
+    font-size: 18px;
+  }
+  h3 {
+    font-size: 16px;
+  }
+  h4 {
+    font-size: 14px;
+  }
+  h5 {
+    font-size: 15px;
+  }
+}
