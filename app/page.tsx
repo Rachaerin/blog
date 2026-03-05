@@ -26,7 +26,7 @@ export default function Home() {
           </li>
         </ul>
       </nav>
-      <h3 className="my-4 text-xl font-bold">All articles</h3>
+      <h3 className="my-4 text-xl font-bold"><span className="mr-2 text-[#ff2056]">#</span>All articles</h3>
       <ul className="all-articles">
         {postsOrderedByDate.map((post, ind) => (
           <li key={ind}>
