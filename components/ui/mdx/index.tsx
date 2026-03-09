@@ -2,6 +2,7 @@
 
 import { MDXContent } from "@content-collections/mdx/react";
 import Pre from "./pre";
+import MarkdownImage from "./img";
 
 export default function MDX({ code }: { code: string }) {
   return (
@@ -10,6 +11,7 @@ export default function MDX({ code }: { code: string }) {
         code={code}
         components={{
           pre: Pre,
+          img: MarkdownImage,
         }}
       />
     </div>

@@ -32,4 +32,10 @@
   ::-webkit-scrollbar-track {
     background-color: transparent;
   }
+
+  img {
+    cursor: pointer;
+    border-radius: 3px;
+    object-fit: cover;
+  }
 }

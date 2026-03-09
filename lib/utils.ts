@@ -4,6 +4,18 @@ import { twMerge } from "tailwind-merge";
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
+export function formatDateWithYMD(date: Date | string | number) {
+  // 确保参数是Date对象
+  const dateObj = date instanceof Date ? date : new Date(date);
+
+  // 验证日期是否有效
+  if (isNaN(dateObj.getTime())) {
+    throw new Error("Invalid date provided to customDateFormat");
+  }
+
+  return format(dateObj, "yyyy年MM月dd日");
+}
+
 export function formatDateWithOrdinal(date: Date | string | number) {
   // 确保参数是Date对象
   const dateObj = date instanceof Date ? date : new Date(date);
