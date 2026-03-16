@@ -26,14 +26,19 @@ export default function Home() {
           </li>
         </ul>
       </nav>
-      <h3 className="my-4 text-xl font-bold"><span className="mr-2 text-[#ff2056]">#</span>All articles</h3>
+      <h3 className="my-4 text-xl font-bold">
+        <span className="mr-2 text-[#ff2056]">#</span>All articles
+      </h3>
       <ul className="all-articles">
         {postsOrderedByDate.map((post, ind) => (
-          <li key={ind}>
-            <Link href={post.url} className="hover:bg-[#e60076] hover:text-[#f9fafb]">
+          <li key={ind} className="my-1">
+            <span className="text-[#999] mr-3 w-[6rem] inline-block">{post.date}</span>
+            <Link
+              href={post.url}
+              className="hover:bg-[#e60076] hover:text-[#f9fafb]"
+            >
               {post.title}
             </Link>
-            <span className="text-[#999] ml-3">{post.time}</span>
           </li>
         ))}
       </ul>

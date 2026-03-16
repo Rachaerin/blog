@@ -1,4 +1,4 @@
 .all-articles > li::before {
-  content: "✦ ";
-  vertical-align: middle;
+  content: "";
+  /* vertical-align: middle; */
 }
