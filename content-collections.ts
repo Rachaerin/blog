@@ -10,9 +10,9 @@ import remarkMath from "remark-math";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import { z } from "zod";
-import { formatDateWithOrdinal, stringToHashCode } from "./lib/utils";
+import { formatDateWithOrdinal } from "./lib/utils";
 
-const postDirectory = "docs/posts";
+const postDirectory = "content/posts";
 
 const option: Options = {
   rehypePlugins: [
@@ -46,13 +46,11 @@ const posts = defineCollection({
   }),
   transform: async (document, context) => {
     const mdx = await compileMDX(context, document, option);
-    const hashCode = stringToHashCode(document._meta.fileName);
     const time = formatDateWithOrdinal(document.date);
     return {
       ...document,
-      hashCode: hashCode,
       time,
-      url: `/posts/${hashCode}`,
+      url: `/posts/${document._meta.path}`,
       mdx,
     };
   },

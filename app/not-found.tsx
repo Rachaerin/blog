@@ -1,4 +1,4 @@
-import { Space } from "@/components/icons/Space";
+import { Space } from "@/components/icons/space";
 
 export default function NotFound() {
   return (

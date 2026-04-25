@@ -1,4 +1,0 @@
-.all-articles > li::before {
-  content: "";
-  /* vertical-align: middle; */
-}
