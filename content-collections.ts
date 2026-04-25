@@ -10,7 +10,7 @@ import remarkMath from "remark-math";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import { z } from "zod";
-import { formatDateWithOrdinal } from "./lib/utils";
+import { formatDateWithOrdinal, stringToHashCode } from "./lib/utils";
 
 const postDirectory = "content/posts";
 
@@ -47,10 +47,12 @@ const posts = defineCollection({
   transform: async (document, context) => {
     const mdx = await compileMDX(context, document, option);
     const time = formatDateWithOrdinal(document.date);
+    const hashCode = stringToHashCode(document._meta.fileName);
     return {
       ...document,
       time,
-      url: `/posts/${document._meta.path}`,
+      hashCode: hashCode,
+      url: `/posts/${hashCode}`,
       mdx,
     };
   },

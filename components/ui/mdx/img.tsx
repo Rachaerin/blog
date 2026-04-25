@@ -1,6 +1,7 @@
 "use client";
 
 import { PhotoView } from "react-photo-view";
+import Image from "next/image";
 
 type Props = {
   src?: string;
@@ -16,7 +17,21 @@ export default function MarkdownImage({ src, alt }: Props) {
   }
   return (
     <PhotoView src={src}>
-      <img alt={alt} src={src} />
+      <Image
+        alt={alt ?? ""}
+        src={src}
+        width={200}
+        height={200}
+        className="mb-2 mt-2 cursor-pointer"
+        style={{
+          width: "100%",
+          height: "auto",
+          objectFit: "cover",
+          maxHeight: "340px",
+        }}
+        placeholder="blur"
+        blurDataURL="/img/giphy-1.gif"
+      />
     </PhotoView>
   );
 }

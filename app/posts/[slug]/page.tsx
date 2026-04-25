@@ -10,7 +10,7 @@ interface Props {
 export default async function Slug({ params }: Props) {
   const { slug } = await params;
 
-  const post = (allPosts as PostOverview[]).find((p) => p._meta.path === slug);
+  const post = (allPosts as PostOverview[]).find((p) => p.hashCode === slug);
   if (!post) {
     notFound();
   }
@@ -28,13 +28,13 @@ export default async function Slug({ params }: Props) {
 
 export const generateStaticParams = async () => {
   return (allPosts as PostOverview[]).map((post) => ({
-    slug: post._meta.path,
+    slug: post.hashCode,
   }));
 };
 
 export const generateMetadata = async ({ params }: Props) => {
   const { slug } = await params;
-  const post = (allPosts as PostOverview[]).find((p) => p._meta.path === slug);
+  const post = (allPosts as PostOverview[]).find((p) => p.hashCode === slug);
   if (!post) {
     return;
   }
