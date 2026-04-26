@@ -23,12 +23,7 @@ const option: Options = {
       rehypeExternalLinks,
       { target: "_blank", rel: ["nofollow", "noopener", "noreferrer"] },
     ],
-    [
-      rehypePrettyCode,
-      {
-        theme: "material-theme-ocean",
-      },
-    ],
+    [rehypePrettyCode],
   ],
   remarkPlugins: [remarkGfm, remarkBreaks, remarkMath],
 };

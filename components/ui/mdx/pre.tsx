@@ -6,15 +6,19 @@ import { DetailedHTMLProps, HTMLAttributes, useRef, useState } from "react";
 export default function Pre({
   children,
   ...props
-}: DetailedHTMLProps<HTMLAttributes<HTMLPreElement>, HTMLPreElement>) {
+}: DetailedHTMLProps<HTMLAttributes<HTMLPreElement>, HTMLPreElement> & {
+  "data-language"?: string; // ✅ 明确存在该属性
+}) {
   const [isCopied, setIsCopied] = useState(false);
   const preRef = useRef<HTMLPreElement>(null);
+  const language = props["data-language"];
 
   const handleClickCopy = async () => {
     const code = preRef.current?.textContent;
 
     if (code) {
-      await navigator.clipboard.writeText(code);
+      const newCode = code.replace(language || "code", "");
+      await navigator.clipboard.writeText(newCode);
       setIsCopied(true);
 
       setTimeout(() => {
@@ -26,13 +30,20 @@ export default function Pre({
   return (
     <div className="relative">
       <pre ref={preRef} {...props} suppressHydrationWarning>
-        <button
-          disabled={isCopied}
-          onClick={handleClickCopy}
-          className="absolute right-4 size-4 cursor-pointer"
-        >
-          {isCopied ? <Check color="#00c9a7" /> : <Copy color="#009efa" />}
-        </button>
+        <span className="block mb-2 flex justify-between h-[24px]">
+          <span className="uppercase">{language || "code"}</span>
+          <button
+            disabled={isCopied}
+            onClick={handleClickCopy}
+            className="absolute right-4 cursor-pointer"
+          >
+            {isCopied ? (
+              <Check color="#00c9a7" size={20} />
+            ) : (
+              <Copy color="#009efa" size={20} />
+            )}
+          </button>
+        </span>
         {children}
       </pre>
     </div>

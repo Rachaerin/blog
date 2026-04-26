@@ -8,7 +8,7 @@ export default function Header() {
           <EditableLink href="/">[ home ]</EditableLink>
         </li>
         <li>
-          <EditableLink href="/about">[ about ]</EditableLink>
+          <EditableLink href="https://github.com/Rachaerin">[ about ]</EditableLink>
         </li>
         <li>
           <EditableLink href="/photo">[ photo ]</EditableLink>
