@@ -7,10 +7,16 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'onoex-img.oss-cn-beijing.aliyuncs.com',
-        port: '',
-        pathname: '/images/**',
+        protocol: "https",
+        hostname: "onoex-img.oss-cn-beijing.aliyuncs.com",
+        port: "",
+        pathname: "/images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+        port: "",
+        pathname: "/**",
       },
     ],
   },
