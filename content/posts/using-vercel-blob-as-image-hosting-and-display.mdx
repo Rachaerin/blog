@@ -1,3 +1,52 @@
+---
+title: using-vercel-blob-as-image-hosting-and-display
+description: Vercel Blob Next.js Starter is an open-source project officially released by Vercel
+category: blob
+date: 2026-04-26
+labels:
+  - blob
+  - storage
+  - vercel
+---
+
+### Vercel blob
+
+Vercel Blob Next.js Starter is an open-source project officially released by Vercel. Built on the Next.js framework, it integrates the Vercel Blob storage service. In essence, it functions as an image hosting system with backend capabilities: upon image upload, a CDN link is automatically returned. This approach is an order of magnitude more efficient and less cumbersome compared to traditional solutions.
+
+Demo: [vercel blob](https://blob-starter.vercel.app/)
+
+One-click deployment: [⏩](https://vercel.com/new/clone?demo-title=Vercel+Blob+Next.js+Starter&demo-description=Simple+Next.js+template+that+uses+Vercel+Blob+for+image+uploads&demo-url=https%3A%2F%2Fblob-starter.vercel.app%2F&project-name=blob-starter&repository-name=blob-starter&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fstorage%2Fblob-starter&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2FW7szxXAHpF3eZ4RFT33Cb%2F4d8a64904b67980e449b487089dd7b2b%2Fopengraph-image.png&stores=%5B%7B%22type%22%3A%22blob%22%7D%5D&teamSlug=twoices-projects)
+
+### Blob list
+
+```ts
+// You need to obtain the relevant token from the Vercel dashboard (configure the .env.local file).
+// BLOB_READ_WRITE_TOKEN="************"
+// api/vercel-blobs/route.ts
+import { list } from "@vercel/blob";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  try {
+    // 注意：list 函数需要在 Node.js 环境下运行
+    const { blobs } = await list({
+      // 可选：按路径前缀过滤，如 'images/'
+      // prefix: 'your-folder/',
+      // 可选：限制单次返回数量，默认1000，最大1000[reference:4]
+      limit: 1000,
+    });
+    return NextResponse.json({ blobs });
+  } catch (error) {
+    console.error("Listing error:", error);
+    return NextResponse.json({ error: "failed to list" }, { status: 500 });
+  }
+}
+```
+
+### Page building
+
+```tsx
+// app/waterfall/page.tsx
 "use client";
 
 import React, {
@@ -306,3 +355,7 @@ export default function WaterfallPage() {
     </main>
   );
 }
+```
+
+### Other
+When deploying a project on Vercel, don't forget to manually add the necessary configurations from .env.local (set them manually in the `Environment Variables` section of the project dashboard).
