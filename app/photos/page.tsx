@@ -9,6 +9,7 @@ import React, {
   useCallback,
 } from "react";
 import Image from "next/image";
+import { PhotoView } from "react-photo-view";
 
 // ---------- 类型定义 ----------
 interface PhotoItem {
@@ -31,24 +32,15 @@ interface WaterfallLayout {
   totalHeight: number;
 }
 
-// ---------- 工具函数 ----------
-// 生成模拟数据（实际项目中可替换为 API 调用）
-const generateMockPhotos = (count: number = 24): PhotoItem[] => {
-  return Array.from({ length: count }, (_, i) => {
-    const width = Math.floor(Math.random() * (500 - 300 + 1) + 300);
-    const height = Math.floor(Math.random() * (700 - 350 + 1) + 350);
-    const picId = Math.floor(Math.random() * 200) + 1;
-    return {
-      id: i,
-      src: `https://picsum.photos/id/${picId}/${width}/${height}`,
-      width,
-      height,
-      alt: `Photo ${i + 1}`,
-    };
-  });
-};
+interface BlobItem {
+  url: string;
+}
 
-// 计算列数（响应式）
+interface ApiResponse {
+  blobs: BlobItem[];
+}
+
+// ---------- 工具函数 ----------
 const calcColumns = (
   containerWidth: number,
   minColumnWidth: number,
@@ -56,10 +48,9 @@ const calcColumns = (
 ): number => {
   if (containerWidth <= 0) return 1;
   const columns = Math.floor((containerWidth + gap) / (minColumnWidth + gap));
-  return Math.max(1, Math.min(columns, 6)); // 限制最大6列，避免过密
+  return Math.max(1, Math.min(columns, 6));
 };
 
-// 核心瀑布流布局计算
 const computeLayout = (
   photos: PhotoItem[],
   columns: number,
@@ -78,7 +69,6 @@ const computeLayout = (
     const aspectRatio = photo.height / photo.width;
     const itemHeight = columnWidth * aspectRatio;
 
-    // 找到最短的列
     let minHeightIndex = 0;
     for (let i = 1; i < columns; i++) {
       if (columnHeights[i] < columnHeights[minHeightIndex]) {
@@ -100,9 +90,9 @@ const computeLayout = (
 // ---------- 瀑布流相册组件 ----------
 interface WaterfallGalleryProps {
   photos: PhotoItem[];
-  gap?: number; // 间距（px）
-  minColumnWidth?: number; // 最小列宽（px）
-  onImageError?: (src: string) => void; // 可选错误回调
+  gap?: number;
+  minColumnWidth?: number;
+  onImageError?: (src: string) => void;
 }
 
 const WaterfallGallery: React.FC<WaterfallGalleryProps> = ({
@@ -114,40 +104,33 @@ const WaterfallGallery: React.FC<WaterfallGalleryProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
-  // 监听容器宽度变化（使用 ResizeObserver，精准且高效）
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       if (entries[0]) {
-        const width = entries[0].contentRect.width;
-        setContainerWidth(width);
+        setContainerWidth(entries[0].contentRect.width);
       }
     });
 
     resizeObserver.observe(container);
-    // 立即获取一次宽度
     setContainerWidth(container.clientWidth);
 
     return () => resizeObserver.disconnect();
   }, []);
 
-  // 根据容器宽度计算列数
   const columns = useMemo(() => {
     return calcColumns(containerWidth, minColumnWidth, gap);
   }, [containerWidth, minColumnWidth, gap]);
 
-  // 计算布局（依赖 photos、columns、containerWidth、gap）
   const layout = useMemo(() => {
     return computeLayout(photos, columns, containerWidth, gap);
   }, [photos, columns, containerWidth, gap]);
 
-  // 图片加载失败时的占位处理
   const handleImageError = useCallback(
     (src: string) => {
-      if (onImageError) onImageError(src);
-      // 可在此添加默认占位图逻辑，此处简单console
+      onImageError?.(src);
       console.warn(`图片加载失败: ${src}`);
     },
     [onImageError]
@@ -175,15 +158,17 @@ const WaterfallGallery: React.FC<WaterfallGalleryProps> = ({
             }}
           >
             <div className="relative w-full h-full">
-              <Image
-                src={photo.src}
-                alt={photo.alt}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover"
-                loading="lazy"
-                onError={() => handleImageError(photo.src)}
-              />
+              <PhotoView src={photo.src}>
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover cursor-pointer"
+                  loading="eager"
+                  onError={() => handleImageError(photo.src)}
+                />
+              </PhotoView>
             </div>
           </div>
         );
@@ -192,9 +177,116 @@ const WaterfallGallery: React.FC<WaterfallGalleryProps> = ({
   );
 };
 
+// ---------- 获取图片宽高（使用 createElement 避免构造参数问题） ----------
+const getImageDimensions = (
+  url: string
+): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement("img"); // 替代 new Image()
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+    img.src = url;
+  });
+};
+
 // ---------- 主页面组件 ----------
 export default function WaterfallPage() {
-  const [photos] = useState<PhotoItem[]>(() => generateMockPhotos(36)); // 36张图片展示效果
+  const [photos, setPhotos] = useState<PhotoItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch("/api/vercel-blobs");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = (await response.json()) as ApiResponse;
+        const blobs = data.blobs || [];
+
+        if (blobs.length === 0) {
+          setPhotos([]);
+          setLoading(false);
+          return;
+        }
+
+        const photoItems = await Promise.all(
+          blobs.map(async (blob: BlobItem, idx: number) => {
+            const { url } = blob;
+            try {
+              const { width, height } = await getImageDimensions(url);
+              return {
+                id: idx,
+                src: url,
+                width,
+                height,
+                alt: `Photo ${idx + 1}`,
+              };
+            } catch (err) {
+              console.error(`Failed to get dimensions for ${url}:`, err);
+              // 降级默认尺寸 400x300
+              return {
+                id: idx,
+                src: url,
+                width: 400,
+                height: 300,
+                alt: `Photo ${idx + 1}`,
+              };
+            }
+          })
+        );
+
+        setPhotos(photoItems);
+      } catch (err) {
+        console.error("Failed to load photos:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <main>
+        <h1 className="font-bold text-2xl mb-4">Photos</h1>
+        <p className="mb-5 text-sm text-[#8a8a8a]">Loading moments...</p>
+        <div className="flex justify-center py-20">
+          <div className="animate-pulse text-gray-500">
+            ✨ Loading gallery ✨
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main>
+        <h1 className="font-bold text-2xl mb-4">Photos</h1>
+        <p className="mb-5 text-sm text-red-500">
+          Failed to load gallery: {error}
+        </p>
+      </main>
+    );
+  }
+
+  if (photos.length === 0) {
+    return (
+      <main>
+        <h1 className="font-bold text-2xl mb-4">Photos</h1>
+        <p className="mb-5 text-sm text-[#8a8a8a]">No photos found.</p>
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -204,7 +296,6 @@ export default function WaterfallPage() {
         Beauty, as I see it.
       </p>
 
-      {/* 瀑布流区域 */}
       <div className="bg-white/50 dark:bg-gray-800/30 rounded-md backdrop-blur-sm">
         <WaterfallGallery
           photos={photos}
